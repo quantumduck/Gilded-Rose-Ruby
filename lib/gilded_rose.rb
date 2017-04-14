@@ -1,6 +1,11 @@
 class GildedRose
   attr_reader :name, :days_remaining, :quality
 
+  # Example Solution: http://www.youtube,com/watch?v=8bZh5LMaSmE
+
+  MAX_QUALITY = 50
+  MIN_QUALITY = 0
+
   def initialize(name:, days_remaining:, quality:)
     @name = name
     @days_remaining = days_remaining
@@ -8,48 +13,53 @@ class GildedRose
   end
 
   def tick
-    if @name != "Aged Brie" and @name != "Backstage passes to a TAFKAL80ETC concert"
-      if @quality > 0
-        if @name != "Sulfuras, Hand of Ragnaros"
-          @quality = @quality - 1
-        end
+    case @name
+    when 'Aged Brie'
+      @days_remaining -= 1
+      if @days_remaining < 0
+        increment_quality(2)
+      else
+        increment_quality
+      end
+    when 'Backstage passes to a TAFKAL80ETC concert'
+      @days_remaining -= 1
+      if @days_remaining < 0
+        @quality = 0
+      elsif @days_remaining < 5
+        increment_quality(3)
+      elsif @days_remaining < 10
+        increment_quality(2)
+      else
+        increment_quality
+      end
+    when 'Sulfuras, Hand of Ragnaros'
+      # Do nothing
+    when 'Conjured Mana Cake'
+      @days_remaining -= 1
+      if @days_remaining <= 0
+        decrement_quality(4)
+      else
+        decrement_quality(2)
       end
     else
-      if @quality < 50
-        @quality = @quality + 1
-        if @name == "Backstage passes to a TAFKAL80ETC concert"
-          if @days_remaining < 11
-            if @quality < 50
-              @quality = @quality + 1
-            end
-          end
-          if @days_remaining < 6
-            if @quality < 50
-              @quality = @quality + 1
-            end
-          end
-        end
-      end
-    end
-    if @name != "Sulfuras, Hand of Ragnaros"
-      @days_remaining = @days_remaining - 1
-    end
-    if @days_remaining < 0
-      if @name != "Aged Brie"
-        if @name != "Backstage passes to a TAFKAL80ETC concert"
-          if @quality > 0
-            if @name != "Sulfuras, Hand of Ragnaros"
-              @quality = @quality - 1
-            end
-          end
-        else
-          @quality = @quality - @quality
-        end
+      @days_remaining -= 1
+      if @days_remaining < 0
+        decrement_quality(2)
       else
-        if @quality < 50
-          @quality = @quality + 1
-        end
+        decrement_quality
       end
+    end
+  end
+
+  def increment_quality(amount = 1)
+    amount.times do
+      @quality += 1 if @quality < MAX_QUALITY
+    end
+  end
+
+  def decrement_quality(amount = 1)
+    amount.times do
+      @quality -= 1 if @quality > MIN_QUALITY
     end
   end
 end
